@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Summarizer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 AI-Based Summarizer</h1>
+    <textarea id="text-input" placeholder="Enter text..."></textarea>
+    <input type="text" id="url-input" placeholder="Or paste a URL..." />
+    <input type="file" id="file-input" />
+    <div class="controls">
+      <label>Length:</label>
+      <select id="length">
+        <option>Short</option>
+        <option selected>Medium</option>
+        <option>Long</option>
+      </select>
+      <label>Style:</label>
+      <select id="style">
+        <option>Paragraph</option>
+        <option>Bullet Points</option>
+      </select>
+      <button onclick="summarize()">Summarize</button>
+    </div>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    async function summarize() {
+      const text = document.getElementById("text-input").value;
+      const url = document.getElementById("url-input").value;
+      const length = document.getElementById("length").value.toLowerCase();
+      const style = document.getElementById("style").value;
+      const file = document.getElementById("file-input").files[0];
+
+      const formData = new FormData();
+      formData.append("text", text);
+      formData.append("url", url);
+      formData.append("length", length);
+      formData.append("style", style);
+      if (file) formData.append("file", file);
+
+      const response = await fetch("/summarize", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      document.getElementById("output").innerText = data.summary;
+    }
+  </script>
+</body>
+</html>
